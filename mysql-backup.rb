@@ -10,7 +10,7 @@
 DBUSER = ARGV[0]
 DBPASSWORD = ARGV[1]
 
-if DBUSER and DBPASSWORD
+if DBUSER
   def run(command, input="")
     IO.popen(command, 'r+') do |io|
       io.puts input
@@ -19,12 +19,12 @@ if DBUSER and DBPASSWORD
     end
   end
 
-  databases = run("mysql -u#{DBUSER} -p#{DBPASSWORD} -e 'show databases'").split("\n")
+  databases = run("mysql -u#{DBUSER} #{"-p#{DBPASSWORD}" if DBPASSWORD} -e 'show databases'").split("\n")
 
   databases.slice!(0) # remove header from table
 
   databases.each do |database|
-    system "mysqldump -u#{DBUSER} -p#{DBPASSWORD} #{database} > #{database}.sql"
+    system "mysqldump -u#{DBUSER} #{"-p#{DBPASSWORD}" if DBPASSWORD} #{database} > #{database}.sql"
     puts "Backed up #{database} to #{database}.sql"
   end
 else
